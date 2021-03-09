@@ -3,13 +3,16 @@ from typing import Iterable, Any, List
 
 import rx
 from rx import operators
+from rx.core import typing
 
 from rxbp.flowable import Flowable
+from rxbp.flowables.createflowable import CreateFlowable
 from rxbp.flowables.fromemptyflowable import FromEmptyFlowable
 from rxbp.flowables.fromiterableflowable import FromIterableFlowable
 from rxbp.flowables.fromrxbufferingflowable import FromRxBufferingFlowable
 from rxbp.flowables.fromrxevictingflowable import FromRxEvictingFlowable
 from rxbp.flowables.fromsingleelementflowable import FromSingleElementFlowable
+from rxbp.flowables.intervalflowable import IntervalFlowable
 from rxbp.init.initflowable import init_flowable
 from rxbp.overflowstrategy import OverflowStrategy, BackPressure, DropOld, ClearBuffer
 from rxbp.utils.getstacklines import get_stack_lines
@@ -236,3 +239,27 @@ def zip(*sources: Flowable) -> Flowable: #, result_selector: Callable[..., Any] 
         return empty()
     else:
         return sources[0].zip(sources[1:], stack=stack)
+
+
+def create(observer: typing.Subscription) -> Flowable:
+    """
+    Create a Flowable that emits each element of the given specified subscription function.
+
+    :param observer: Subscription function
+    """
+    return init_flowable(CreateFlowable(
+        observer=observer,
+    ))
+
+
+def interval(period: typing.RelativeTime) -> Flowable:
+    """
+    Create a Flowable that emits each element after each period.
+
+    :param period: Period for producing the values in the resulting sequence
+        (specified as a :class:`float` denoting seconds or an instance of
+        :class:`timedelta`).
+    """
+    return init_flowable(IntervalFlowable(
+        period=period,
+    ))

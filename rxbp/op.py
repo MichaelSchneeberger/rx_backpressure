@@ -4,6 +4,7 @@ from rxbp.acknowledgement.ack import Ack
 from rxbp.flowable import Flowable
 from rxbp.mixins.flowablemixin import FlowableMixin
 from rxbp.observerinfo import ObserverInfo
+from rxbp.overflowstrategy import OverflowStrategy
 from rxbp.pipeoperation import PipeOperation
 from rxbp.scheduler import Scheduler
 from rxbp.subscriber import Subscriber
@@ -428,5 +429,33 @@ def zip_with_index():
 
     def op_func(left: Flowable):
         return left.zip_with_index()
+
+    return PipeOperation(op_func)
+
+
+def strategy(overflow_strategy: OverflowStrategy):
+    """
+    Buffer the element emitted by the source use overflow strategy.
+    """
+
+    def op_func(source: Flowable):
+        return source.strategy(overflow_strategy=overflow_strategy)
+
+    return PipeOperation(op_func)
+
+
+def subscribe_on(scheduler: Scheduler):
+    """
+    Subscribe on the specified scheduler.
+
+    This only performs the side-effects of subscription and
+    unsubscription on the specified scheduler. In order to invoke
+    observer callbacks on a scheduler, use observe_on.
+
+    :param scheduler: a rxbackpressure scheduler
+    """
+
+    def op_func(source: Flowable):
+        return source.subscribe_on(scheduler=scheduler)
 
     return PipeOperation(op_func)

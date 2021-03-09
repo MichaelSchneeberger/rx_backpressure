@@ -7,7 +7,7 @@ from rxbp.acknowledgement.operators.observeon import _observe_on
 from rxbp.acknowledgement.single import Single
 from rxbp.acknowledgement.stopack import StopAck
 from rxbp.observer import Observer
-from rxbp.overflowstrategy import OverflowStrategy, DropOld, ClearBuffer
+from rxbp.overflowstrategy import OverflowStrategy, DropOld, ClearBuffer, Drop
 from rxbp.scheduler import Scheduler
 
 
@@ -100,6 +100,8 @@ class EvictingBufferedObserver(Observer):
                         return self.offer(a)
                     else:
                         return length
+                elif isinstance(self.strategy, Drop):
+                    return length
                 else:
                     raise Exception('illegal case')
 
